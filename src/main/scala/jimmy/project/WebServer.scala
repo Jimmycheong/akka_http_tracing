@@ -2,13 +2,11 @@ package jimmy.project
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.model._
-import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
+import jimmy.project.repositories.{PsqlDbRepo, SlickDbRepository}
+import jimmy.project.services.{PsqlManagementService, UserManagementService}
 
-import scala.concurrent.Future
 import scala.io.StdIn
-import scala.util.{Failure, Success}
 
 object WebServer {
 
@@ -19,30 +17,22 @@ object WebServer {
     // needed for the future flatMap/onComplete in the end
     implicit val executionContext = system.dispatcher
 
-    def sendGetRequest(): Future[HttpResponse] = {
-      Http().singleRequest(HttpRequest(uri = "https://google.com"))
+    val psqlDbRepo: PsqlDbRepo                            = new PsqlDbRepo()
+    val psqlManagementService: UserManagementService      = new PsqlManagementService(psqlDbRepo)
+
+    val routes = new Routes(psqlManagementService)
+
+    try {
+      val bindingFuture = Http().bindAndHandle(routes.allRoutes, "localhost", 8080)
+      println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
+      StdIn.readLine() // let it run until user presses return
+      bindingFuture
+        .flatMap(_.unbind()) // trigger unbinding from the port
+        .onComplete(_ => system.terminate()) // and shutdown when done
+
+    } finally {
+      psqlDbRepo.db.close
     }
 
-    val route =
-      path("") {
-        get {
-          sendGetRequest().onComplete {
-            case Success(response)  => logger.error("YES!!!!!")
-            case Failure(err)       => logger.error(s"Error message: $err")
-          }
-          logRequest {
-
-          complete(HttpEntity(ContentTypes.`text/html(UTF-8)`, "<h1>Say hello to akka-http</h1>"))
-          }
-        }
-      }
-
-    val bindingFuture = Http().bindAndHandle(route, "localhost", 8080)
-
-    println(s"Server online at http://localhost:8080/\nPress RETURN to stop...")
-    StdIn.readLine() // let it run until user presses return
-    bindingFuture
-      .flatMap(_.unbind()) // trigger unbinding from the port
-      .onComplete(_ => system.terminate()) // and shutdown when done
   }
 }
