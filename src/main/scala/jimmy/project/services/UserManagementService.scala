@@ -5,7 +5,9 @@ import jimmy.project.Models.User
 import scala.concurrent.Future
 
 trait UserManagementService {
-//  def addUsers: Future[Unit]
 
   def getUsers: Future[Seq[User]]
+
+  def addUsers(user: User): Future[Unit]
+
 }

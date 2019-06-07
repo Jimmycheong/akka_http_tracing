@@ -1,13 +1,13 @@
 package jimmy.project.services
 
-import jimmy.project.Models
-import jimmy.project.Models.{User, Users}
-import jimmy.project.repositories.PsqlDbRepo
+import jimmy.project.Models.User
+import jimmy.project.repositories.DbRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PsqlManagementService(psqlDbRepo: PsqlDbRepo)(implicit executionContext: ExecutionContext) extends UserManagementService {
-//  override def addUsers: Future[Unit] = ???
+class PsqlManagementService(dbRepo: DbRepository)(implicit executionContext: ExecutionContext) extends UserManagementService {
 
-  override def getUsers: Future[Seq[User]] = psqlDbRepo.getAllUsers
+  override def getUsers: Future[Seq[User]] = dbRepo.getAllUsers
+
+  override def addUsers(user: User): Future[Unit] = dbRepo.addUser(user)
 }

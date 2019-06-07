@@ -8,5 +8,6 @@ scalaVersion := "2.12.8"
 
 
 libraryDependencies ++= Seq(
-  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
+  "org.scalatest" %% "scalatest" % "3.0.5" % Test
 ) ++ akkaHttpDeps ++ slickDeps

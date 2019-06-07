@@ -6,14 +6,8 @@ import slick.jdbc.PostgresProfile.api._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-
-abstract class SlickDbRepository {
-  val db: Database
-}
-
-class PsqlDbRepo extends SlickDbRepository {
-
-  override val db = Database.forConfig("psqldb")
+class PsqlDbRepo extends DbRepository {
+  val db = Database.forConfig("psqldb")
   val users = TableQuery[UserSchema]
 
   def getAllUsers(implicit executionContext: ExecutionContext): Future[Seq[User]] =
@@ -22,5 +16,7 @@ class PsqlDbRepo extends SlickDbRepository {
         User(id, username)
       }
     }
+
+  def addUser(user: User)(implicit executionContext: ExecutionContext): Future[Unit] = ???
 
 }
