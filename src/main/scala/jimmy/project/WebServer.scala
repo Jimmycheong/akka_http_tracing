@@ -26,7 +26,6 @@ object WebServer {
     implicit val materializer: ActorMaterializer = ActorMaterializer()
     implicit val executionContext: ExecutionContextExecutor = system.dispatcher // needed for the future flatMap/onComplete in the end
 
-
     migrateDb()
 
     val database = Database.forConfig("psqldb")

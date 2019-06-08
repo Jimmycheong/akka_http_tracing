@@ -8,7 +8,11 @@ import org.scalatest.{Matchers, WordSpec}
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PsqlManagementServiceSpec extends WordSpec with Matchers with ScalaFutures with PsqlManagementServiceFixture {
+class PsqlManagementServiceSpec
+  extends WordSpec
+    with Matchers
+    with PsqlManagementServiceFixture
+    with ScalaFutures {
   import scala.concurrent.ExecutionContext.Implicits._
 
   val psqlManagementService = new PsqlManagementService(dbRepo)
@@ -16,7 +20,7 @@ class PsqlManagementServiceSpec extends WordSpec with Matchers with ScalaFutures
   "The Service should" should {
 
     "return a list of users" in {
-      psqlManagementService.getUsers shouldBe Seq(User(1,"user1"), User(2, "user2"))
+      psqlManagementService.getUsers.futureValue shouldBe Seq(User(1,"user1"), User(2, "user2"))
     }
 
     "a new user to the database" in {
@@ -30,7 +34,6 @@ class PsqlManagementServiceSpec extends WordSpec with Matchers with ScalaFutures
 trait PsqlManagementServiceFixture {
 
   val dbRepo: DbRepository = new DbRepository {
-
     var users: Seq[User] = Seq(User(1, "user1"), User(2, "user2"))
 
     override def getAllUsers(implicit executionContext: ExecutionContext): Future[Seq[Models.User]] = Future(users)
