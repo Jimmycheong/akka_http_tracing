@@ -30,7 +30,7 @@ object WebServer {
 
     val database = Database.forConfig("psqldb")
     val psqlDbRepo: PsqlSlickRepository                   = new PsqlSlickRepository(database)
-    val psqlManagementService: UserManagementService      = new PsqlManagementService(psqlDbRepo)
+    val psqlManagementService: UserManagementService[Int] = new PsqlManagementService(psqlDbRepo)
 
     val routes = new Routes(psqlManagementService)
 

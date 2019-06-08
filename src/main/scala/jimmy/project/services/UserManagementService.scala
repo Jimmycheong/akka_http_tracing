@@ -4,10 +4,10 @@ import jimmy.project.Models.User
 
 import scala.concurrent.Future
 
-trait UserManagementService {
+trait UserManagementService[T] {
 
   def getUsers: Future[Seq[User]]
 
-  def addUsers(user: User): Future[Unit]
+  def addUsers(user: User): Future[T]
 
 }

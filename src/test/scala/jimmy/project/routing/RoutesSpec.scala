@@ -18,7 +18,7 @@ class RoutesSpec extends WordSpec with Matchers with ScalatestRouteTest
 
   val testRoutes: Route = new Routes(mockedService).allRoutes
 
-  "The Service" should {
+  "The routing setup" should {
 
     "return a list of all users" in {
       Get("/api/users") ~> testRoutes ~> check {
@@ -47,7 +47,7 @@ trait RoutesFixture {
   val users: Seq[User] = Seq(User(1, "Jimmy"), User(2, "James"))
 
   import scala.concurrent.ExecutionContext.Implicits._
-  val mockedService: UserManagementService = new UserManagementService {
+  val mockedService: UserManagementService[Unit] = new UserManagementService[Unit] {
     override def getUsers: Future[Seq[Models.User]] = Future(users)
 
     override def addUsers(user: User): Future[Unit] = Future(Unit)

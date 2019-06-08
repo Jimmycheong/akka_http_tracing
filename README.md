@@ -10,7 +10,6 @@ following technologies:
 - ScalaTest - for testing tools 
 
 ## Next steps 
-- Implement add user feature and write tests
 - Implement proper rejection handling
 
 ## Future Work 

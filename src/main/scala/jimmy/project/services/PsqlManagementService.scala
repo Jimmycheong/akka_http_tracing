@@ -5,9 +5,10 @@ import jimmy.project.repositories.DbRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PsqlManagementService(dbRepo: DbRepository)(implicit executionContext: ExecutionContext) extends UserManagementService {
+class PsqlManagementService[T](dbRepo: DbRepository[T])(implicit executionContext: ExecutionContext)
+  extends UserManagementService[T] {
 
   override def getUsers: Future[Seq[User]] = dbRepo.getAllUsers
 
-  override def addUsers(user: User): Future[Unit] = dbRepo.addUser(user)
+  override def addUsers(user: User): Future[T] = dbRepo.addUser(user)
 }

@@ -11,7 +11,7 @@ import spray.json._
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
 
-class Routes(umService: UserManagementService)(implicit executionContext: ExecutionContext)
+class Routes[T](umService: UserManagementService[T])(implicit executionContext: ExecutionContext)
   extends UserJsonProtocol with Rejections {
 
   val allRoutes: Route =
@@ -28,7 +28,10 @@ class Routes(umService: UserManagementService)(implicit executionContext: Execut
           pathEnd {
             post {
               entity(as[User]) { user =>
-                complete(s"New user added: ${user.toJson.toString}")
+                onComplete(umService.addUsers(user)) {
+                  case Success(value) => complete(s"New user added: ${user.toJson.toString}")
+                  case Failure(exception) => complete("error adding user")
+                }
               }
             }
           }

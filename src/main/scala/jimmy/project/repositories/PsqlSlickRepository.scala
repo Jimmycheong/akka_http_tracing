@@ -7,7 +7,7 @@ import slick.jdbc.PostgresProfile.backend
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class PsqlSlickRepository(database: backend.Database) extends DbRepository {
+class PsqlSlickRepository(database: backend.Database) extends DbRepository[Int] {
 
   val users = TableQuery[UserSchema]
 
@@ -18,6 +18,9 @@ class PsqlSlickRepository(database: backend.Database) extends DbRepository {
       }
     }
 
-  def addUser(user: User)(implicit executionContext: ExecutionContext): Future[Unit] = ???
+  def addUser(user: User)(implicit executionContext: ExecutionContext): Future[Int] =
+    database.run(users += (user.id, user.username))
+  // Insert the id and returns the id, figure out why this isn't working
+//    database.run((users returning users.map(_.id)) += (user.id, user.username))
 
 }

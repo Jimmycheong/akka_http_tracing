@@ -1,1 +1,1 @@
-insert into users(id, username) values (1, 'john'), (2, 'mary');
+insert into users(id, username) values (1, 'John'), (2, 'Sarah');

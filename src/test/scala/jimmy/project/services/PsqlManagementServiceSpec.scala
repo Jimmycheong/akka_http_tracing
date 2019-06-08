@@ -26,6 +26,8 @@ class PsqlManagementServiceSpec
     "a new user to the database" in {
       val newUser = User(1, "newGuy")
       psqlManagementService.addUsers(newUser)
+
+      dbRepo.getAllUsers.futureValue shouldBe  existingUsers ++ Seq(newUser)
     }
   }
 
@@ -33,12 +35,17 @@ class PsqlManagementServiceSpec
 
 trait PsqlManagementServiceFixture {
 
-  val dbRepo: DbRepository = new DbRepository {
-    var users: Seq[User] = Seq(User(1, "user1"), User(2, "user2"))
+  val existingUsers: Seq[User] = Seq(User(1, "user1"), User(2, "user2"))
+
+  val dbRepo: DbRepository[Unit] = new DbRepository[Unit] {
+    var users: Seq[User] = existingUsers
 
     override def getAllUsers(implicit executionContext: ExecutionContext): Future[Seq[Models.User]] = Future(users)
 
-    override def addUser(user: Models.User)(implicit executionContext: ExecutionContext): Future[Unit] = Future {Unit}
+    override def addUser(user: Models.User)(implicit executionContext: ExecutionContext): Future[Unit] = {
+      users ++= Seq(user)
+      Future {Unit}
+    }
   }
 
 }
