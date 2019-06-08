@@ -1,4 +1,4 @@
-# akka_http_tracing
+# basic_akka_http_psql_template
 
 The following project serves as a template on building a simple microservice application and uses the 
 following technologies:
@@ -8,3 +8,11 @@ following technologies:
 - Slick - for database access
 - Flyway - for Database migration
 - ScalaTest - for testing tools 
+
+## Next steps 
+- Implement add user feature and write tests
+- Implement proper rejection handling
+
+## Future Work 
+- Add Kamon metrics and tracing to routes 
+- Check if tracing is being published to ZipKin
