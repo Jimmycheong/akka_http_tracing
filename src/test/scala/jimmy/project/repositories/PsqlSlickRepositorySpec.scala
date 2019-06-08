@@ -4,6 +4,7 @@ import com.typesafe.config.{Config, ConfigFactory}
 import com.typesafe.scalalogging.StrictLogging
 import jimmy.project.DbMigrations
 import jimmy.project.Models.User
+import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException
 import org.scalatest.concurrent.{PatienceConfiguration, ScalaFutures}
 import org.scalatest.time._
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
@@ -37,10 +38,10 @@ class PsqlSlickRepositorySpec extends WordSpec with Matchers
     "add a new user to the database" in {
       psqlSlickRepository.getAllUsers.futureValue shouldBe existingUsers
 
-      val returnedId = psqlSlickRepository.addUser(newUser).futureValue
+      val returnedId = psqlSlickRepository.addUser(userId3).futureValue
 
       returnedId shouldBe 1 // One row returned
-      psqlSlickRepository.getAllUsers.futureValue shouldBe existingUsers ++ Seq(newUser)
+      psqlSlickRepository.getAllUsers.futureValue shouldBe existingUsers ++ Seq(userId3)
     }
 
   }
@@ -57,11 +58,14 @@ trait PsqlSlickRepositoryFixture {
     password  = config.getString("psqldb.properties.password")
   )
 
+  val userId1 = User(1, "John")
+  val userId2 = User(2, "Sarah")
+  val userId3 = User(3, "Billy")
+
   val existingUsers: Seq[User] = Seq(
-    User(1, "John"),
-    User(2, "Sarah")
+    userId1,
+    userId2
   )
 
-  val newUser = User(3, "Billy")
 
 }

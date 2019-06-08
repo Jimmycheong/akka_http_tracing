@@ -37,5 +37,4 @@ class Routes[T](umService: UserManagementService[T])(implicit executionContext: 
           }
         }
     }
-
 }

@@ -1,6 +1,6 @@
 import Dependencies._
 
-name := "akka_http_tracing"
+name := "basic_akka_http_psql_template"
 
 version := "0.1"
 
