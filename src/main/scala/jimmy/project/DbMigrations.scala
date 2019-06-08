@@ -10,44 +10,41 @@ import slick.jdbc.DriverDataSource
 
 object DbMigrations extends LazyLogging {
 
-  def performMigrations(dbConfig: Config): Int = {
+  def performMigrations(dbConfig: Config, migrationScripts: Seq[String] = Seq("/db/migration")): Int = {
     logger.info("Performing dbmigration")
 
-    // MAKE SURE TO ACTUALLY CREATE TWO FOLDERS INSTEAD OF ONE called db.migration
-
+    // MAKE SURE TO ACTUALLY CREATE TWO FOLDERS INSTEAD OF ONE called db.test_scripts
     val flyway: Flyway =
       Flyway
         .configure
-//          .dataSource("jdbc:postgresql://localhost/testdb", "tom", "tom")
-          .dataSource(new DriverDataSource(
-        url = "jdbc:postgresql://localhost/testdb",
-        user = "tom",
-        password = "tom",
-        driverClassName = "org.postgresql.Driver"
-      ))
-//        .dataSource("jdbc:h2:~/testdb;DB_CLOSE_DELAY=-1;DATABASE_TO_LOWER=TRUE;MODE=PostgreSQL", "","")
-//        .dataSource(dataSource)/
-//        .locations("/src/main/resources/db/migration")
+        .dataSource(new DriverDataSource(
+          url = dbConfig.getString("psqldb.jdbcUrl"),
+          user = dbConfig.getString("psqldb.properties.user"),
+          password = dbConfig.getString("psqldb.properties.password"),
+          driverClassName = dbConfig.getString("psqldb.dataSourceClass")
+        ))
+//        .locations("/db/test_scripts")
+        .locations(migrationScripts: _*)
         .load
 
     val infoService: MigrationInfoService = flyway.info()
 
-    println(s"Number applied: ${infoService.applied().length}")
-    println(s"Number pending: ${infoService.pending().length}")
-    println(s"Number all: ${infoService.all().length}")
-
-    infoService.all().foreach { migration: MigrationInfo =>
-      println(s"Migration: ${migration.getDescription}")
+    checkMigrationStatus(infoService)
+    infoService.all().foreach { sth: MigrationInfo =>
+      println(sth.getScript)
     }
-
 
     val numberOfMigrations = flyway.migrate() // perform dbmigration
 
-    println(s"Number applied: ${infoService.applied().length}")
-    println(s"Number all: ${infoService.all().length}")
-
     logger.info(s"Completed dbmigration")
     numberOfMigrations
+  }
+
+  def checkMigrationStatus(migrationInfoService: MigrationInfoService): Unit = {
+    println(s"Number applied: ${migrationInfoService.applied().length}")
+    println(s"Number pending: ${migrationInfoService.pending().length}")
+    println(s"Number all: ${migrationInfoService.all().length}")
+
   }
 
 }
